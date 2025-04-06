@@ -1,11 +1,99 @@
 <!DOCTYPE html>
-<html>
-  <head>
-    <meta charset="UTF-8" />
-    <meta http-equiv="refresh" content="0; url="https://b0e2cf79d823b0eaf6eeffe49580bc01.serveo.net/" />
-    <title>RT3 Hub</title>
-  </head>
-  <body>
-    <p>Redirecting you to our website, if you are not being redirected, click <a href="https://b0e2cf79d823b0eaf6eeffe49580bc01.serveo.net/">here</a>.</p>
-  </body>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>RT3 Hub</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+      font-family: 'Segoe UI', sans-serif;
+      color: white;
+      text-align: center;
+      background: black;
+    }
+
+    video.bg {
+      position: fixed;
+      right: 0;
+      bottom: 0;
+      min-width: 100%;
+      min-height: 100%;
+      object-fit: cover;
+      z-index: -1;
+      filter: brightness(0.4) saturate(1.2);
+    }
+
+    .overlay {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+    }
+
+    .spinner {
+      border: 6px solid rgba(255, 255, 255, 0.2);
+      border-top: 6px solid #00ffff;
+      border-radius: 50%;
+      width: 60px;
+      height: 60px;
+      animation: spin 1s linear infinite;
+      margin: 20px auto;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    .msg {
+      font-size: 1.5rem;
+      margin-top: 10px;
+    }
+  </style>
+</head>
+<body>
+  <video autoplay muted loop class="bg">
+    <source src="https://cdn.coverr.co/videos/coverr-nebula-galaxy-5139/1080p.mp4" type="video/mp4">
+    Your browser does not support HTML5 video.
+  </video>
+
+  <div class="overlay" id="statusContainer">
+    <div class="spinner" style="display: none;"></div>
+    <div class="msg"></div>
+  </div>
+
+  <script>
+    const container = document.getElementById('statusContainer');
+    const spinner = container.querySelector('.spinner');
+    const msg = container.querySelector('.msg');
+    const redirectURL = "https://rtthree.github.io/hub";
+
+    fetch('status.me')
+      .then(response => response.text())
+      .then(status => {
+        status = status.trim().toLowerCase();
+        if (status === "ok") {
+          window.location.href = redirectURL;
+        } else {
+          spinner.style.display = "block";
+          let message = "Unknown status...";
+          if (status === "paused") {
+            message = "⏸️ The hub is temporarily paused due to technical issues.";
+          } else if (status === "stopped") {
+            message = "🛑 The hub is currently stopped and unavailable.";
+          } else if (status === "working") {
+            message = "🔧 We are updating the hub and adding new tools. Please check back soon!";
+          }
+          msg.textContent = message;
+        }
+      })
+      .catch(error => {
+        spinner.style.display = "none";
+        msg.textContent = "⚠️ Error loading status. Try again later.";
+        console.error(error);
+      });
+  </script>
+</body>
 </html>
